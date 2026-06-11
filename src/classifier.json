@@ -1,0 +1,51 @@
+{
+  "rules": [
+    {
+      "type": "coding",
+      "patterns": ["编码", "开发", "实现", "修复", "代码", "compile", "build", "test", "debug", "KARPATHY", "重构"],
+      "timeout_base_ms": 600000,
+      "timeout_max_ms": 1200000,
+      "heartbeat_interval_ms": 30000,
+      "max_renewals": 3
+    },
+    {
+      "type": "external_api",
+      "patterns": ["飞书", "feishu", "lark", "API", "curl", "web_fetch", "web_search", "HTTP"],
+      "timeout_base_ms": 300000,
+      "timeout_max_ms": 900000,
+      "heartbeat_interval_ms": 45000,
+      "max_renewals": 4
+    },
+    {
+      "type": "file_ops",
+      "patterns": ["报告", "文档", "write", "edit", "read", "文件", "整理", "统计", "汇总", "生成"],
+      "timeout_base_ms": 300000,
+      "timeout_max_ms": 600000,
+      "heartbeat_interval_ms": 30000,
+      "max_renewals": 3
+    },
+    {
+      "type": "diagnostic",
+      "patterns": ["检查", "诊断", "搜索", "grep", "find", "status", "health", "查看", "分析"],
+      "timeout_base_ms": 180000,
+      "timeout_max_ms": 360000,
+      "heartbeat_interval_ms": 30000,
+      "max_renewals": 2
+    },
+    {
+      "type": "data_heavy",
+      "patterns": ["批量", "全量", "所有", "遍历", "统计报告", "数据分析", "大数据"],
+      "timeout_base_ms": 600000,
+      "timeout_max_ms": 1800000,
+      "heartbeat_interval_ms": 60000,
+      "max_renewals": 4
+    }
+  ],
+  "default": {
+    "type": "file_ops",
+    "timeout_base_ms": 300000,
+    "timeout_max_ms": 600000,
+    "heartbeat_interval_ms": 30000,
+    "max_renewals": 3
+  }
+}
