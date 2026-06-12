@@ -20,6 +20,10 @@ case "$ACTION" in
     
     HEARTBEAT_FILE="$WATCHDOG_DIR/heartbeat-${TASK_ID}.json"
     
+    # 可选：第 7 个参数为 report_interval_ms（长任务主动汇报间隔）
+    REPORT_INTERVAL_MS="${7:-0}"
+    NOW_EPOCH_MS=$(($(date +%s) * 1000))
+
     cat > "$HEARTBEAT_FILE" <<EOF
 {
   "taskId": "$TASK_ID",
@@ -31,6 +35,10 @@ case "$ACTION" in
   "timeoutBaseMs": $TIMEOUT_BASE,
   "timeoutMaxMs": $TIMEOUT_MAX,
   "heartbeatIntervalMs": $HEARTBEAT_INTERVAL,
+  "reportIntervalMs": $REPORT_INTERVAL_MS,
+  "lastReportTime": $NOW_EPOCH_MS,
+  "currentStage": "初始化",
+  "progressPercent": 0,
   "status": "running"
 }
 EOF
@@ -65,6 +73,31 @@ EOF
     echo "Heartbeat updated: $TASK_ID"
     ;;
     
+  "report")
+    # 子代理更新汇报状态
+    # 参数：report <task_id> <stage> <progress_percent>
+    STAGE="$3"
+    PROGRESS="$4"
+
+    HEARTBEAT_FILE="$WATCHDOG_DIR/heartbeat-${TASK_ID}.json"
+
+    if [ ! -f "$HEARTBEAT_FILE" ]; then
+      echo "Error: Heartbeat file not found for $TASK_ID" >&2
+      exit 1
+    fi
+
+    NOW_EPOCH_MS=$(($(date +%s) * 1000))
+    jq --arg stage "$STAGE" \
+       --argjson progress "${PROGRESS:-0}" \
+       --argjson now_ms "$NOW_EPOCH_MS" \
+       '.currentStage = $stage |
+        .progressPercent = $progress |
+        .lastReportTime = $now_ms' \
+       "$HEARTBEAT_FILE" > "$HEARTBEAT_FILE.tmp" && mv "$HEARTBEAT_FILE.tmp" "$HEARTBEAT_FILE"
+
+    echo "Report updated: $TASK_ID stage=$STAGE progress=${PROGRESS}%"
+    ;;
+
   "complete")
     # 子代理完成时调用
     # 参数：complete <task_id> [status]

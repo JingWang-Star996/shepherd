@@ -97,6 +97,24 @@ for hb_file in "$WATCHDOG_DIR"/heartbeat-*.json; do
     WARNING_COUNT=$((WARNING_COUNT + 1))
     echo "WARNING|$TASK_ID|$TASK_TYPE|${AGE}s|checking..."
   fi
+
+  # === 长任务主动汇报检查 ===
+  REPORT_INTERVAL_MS=$(jq -r '.reportIntervalMs // 0' "$hb_file")
+  if [ "$REPORT_INTERVAL_MS" -gt 0 ] 2>/dev/null; then
+    LAST_REPORT_TIME=$(jq -r '.lastReportTime // 0' "$hb_file")
+    NOW_EPOCH_MS=$((NOW * 1000))
+    REPORT_ELAPSED=$((NOW_EPOCH_MS - LAST_REPORT_TIME))
+    if [ "$REPORT_ELAPSED" -gt "$REPORT_INTERVAL_MS" ]; then
+      CURRENT_STAGE=$(jq -r '.currentStage // "unknown"' "$hb_file")
+      PROGRESS_PERCENT=$(jq -r '.progressPercent // 0' "$hb_file")
+      echo "REPORT|$TASK_ID|$CURRENT_STAGE|$PROGRESS_PERCENT|${TOTAL_AGE}s"
+
+      # 更新 lastReportTime 防止重复触发
+      jq --argjson now_ms "$NOW_EPOCH_MS" \
+         '.lastReportTime = $now_ms' \
+         "$hb_file" > "$hb_file.tmp" && mv "$hb_file.tmp" "$hb_file"
+    fi
+  fi
 done
 
 # 更新仪表盘

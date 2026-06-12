@@ -22,7 +22,8 @@
       "timeout_base_ms": 300000,
       "timeout_max_ms": 600000,
       "heartbeat_interval_ms": 30000,
-      "max_renewals": 3
+      "max_renewals": 3,
+      "report_interval_ms": 60000
     },
     {
       "type": "diagnostic",
@@ -34,11 +35,12 @@
     },
     {
       "type": "data_heavy",
-      "patterns": ["批量", "全量", "所有", "遍历", "统计报告", "数据分析", "大数据"],
+      "patterns": ["批量", "全量", "所有", "遍历", "统计报告", "数据分析", "大数据", "数据收集", "长任务"],
       "timeout_base_ms": 600000,
       "timeout_max_ms": 1800000,
       "heartbeat_interval_ms": 60000,
-      "max_renewals": 4
+      "max_renewals": 4,
+      "report_interval_ms": 60000
     }
   ],
   "default": {
