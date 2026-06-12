@@ -1,66 +1,69 @@
+[中文文档](README_zh-CN.md)
+
 # Shepherd 🐑
 
 **Subagent Watchdog for OpenClaw**
 
-牧羊人——引导和守护每一个子代理任务。
+The shepherd — guiding and guarding every subagent task.
 
-## 问题
+## Problem
 
-OpenClaw 子代理超时率 19.4%，占失败的 71.3%。当前机制是固定阈值一刀切，无法区分"在干活但慢"和"真死了"。
+OpenClaw subagent timeout rate is 19.4%, accounting for 71.3% of all failures. The current mechanism uses a one-size-fits-all fixed threshold, unable to distinguish between "working but slow" and "truly dead."
 
-## 方案
+## Solution
 
-混合架构：本地做骨架（确定性、毫秒级），LLM 做判断（智能诊断、按需调用）。
+A hybrid architecture: local layer handles the skeleton (deterministic, millisecond-level), LLM handles judgment (intelligent diagnostics, on-demand).
 
-### 核心模块
+### Core Modules
 
-| 模块 | 层级 | 职责 |
-|------|------|------|
-| 任务分类器 | 本地 | 关键词匹配 → 任务类型 → 超时策略 |
-| 心跳引擎 | 本地 | 文件心跳协议，检测"活着还是死了" |
-| 动态超时 | 本地 | 活动超时，心跳正常就续期 |
-| 进度追踪 | 本地 | 记录执行步骤，支持断点续传 |
-| 超时诊断 | LLM | kill 后分析死因，决定重派策略 |
-| 异常检测 | 混合 | 本地发现异常 → LLM 诊断原因 |
-| 统计仪表盘 | 本地 | 实时指标 + 周报分析 |
+| Module | Layer | Responsibility |
+|--------|-------|----------------|
+| Task Classifier | Local | Keyword matching → task type → timeout strategy |
+| Heartbeat Engine | Local | File heartbeat protocol, detects "alive or dead" |
+| Dynamic Timeout | Local | Activity timeout, renews if heartbeat is healthy |
+| Progress Tracker | Local | Records execution steps, supports resume from breakpoint |
+| Timeout Diagnosis | LLM | Post-kill analysis of cause, determines re-dispatch strategy |
+| Anomaly Detection | Hybrid | Local anomaly detection → LLM root cause diagnosis |
+| Stats Dashboard | Local | Real-time metrics + weekly report analysis |
 
-## 预期效果
+## Expected Outcomes
 
-| 指标 | 当前 | 目标 |
-|------|------|------|
-| 超时率 | 19.4% | < 8% |
-| 编码完成率 | 57% | > 80% |
-| 误杀率 | 高 | 极低 |
+| Metric | Current | Target |
+|--------|---------|--------|
+| Timeout Rate | 19.4% | < 8% |
+| Coding Completion Rate | 57% | > 80% |
+| False Kill Rate | High | Very Low |
 
-## 架构
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────┐
-│              本地层（确定性）                   │
-│  心跳检测 → 时间阈值 → 续期/kill              │
-│  进度追踪 → 文件变更检测                       │
-│  统计仪表盘 → 数据聚合                         │
+│           Local Layer (Deterministic)         │
+│  Heartbeat → Time Threshold → Renew/Kill     │
+│  Progress Tracker → File Change Detection    │
+│  Stats Dashboard → Data Aggregation          │
 └───────────────────────┬─────────────────────┘
-                        │ 触发条件
+                        │ Trigger Conditions
                         ↓
 ┌─────────────────────────────────────────────┐
-│              LLM 层（智能判断）                │
-│  超时诊断 → 重派策略 → 异常分析 → 周报        │
+│            LLM Layer (Intelligent)           │
+│  Timeout Diagnosis → Re-dispatch → Anomaly  │
+│  Analysis → Weekly Report                   │
 └─────────────────────────────────────────────┘
 ```
 
-## 开发状态
+## Development Status
 
-- [x] 项目初始化
-- [x] 任务分类器
-- [x] 心跳引擎
-- [x] 动态超时
-- [x] 进度追踪
-- [x] 超时诊断（LLM）
-- [x] 统计仪表盘
-- [ ] OpenClaw 插件封装
-- [x] 测试
-- [ ] 发布
+- [x] Project initialization
+- [x] Task classifier
+- [x] Heartbeat engine
+- [x] Dynamic timeout
+- [x] Progress tracker
+- [x] Timeout diagnosis (LLM)
+- [x] Stats dashboard
+- [ ] OpenClaw plugin packaging
+- [x] Testing
+- [x] Release
 
 ## License
 
