@@ -23,7 +23,7 @@
       "timeout_max_ms": 600000,
       "heartbeat_interval_ms": 30000,
       "max_renewals": 3,
-      "report_interval_ms": 60000
+      "report_interval_ms": 120000
     },
     {
       "type": "diagnostic",
@@ -40,7 +40,7 @@
       "timeout_max_ms": 1800000,
       "heartbeat_interval_ms": 60000,
       "max_renewals": 4,
-      "report_interval_ms": 60000
+      "report_interval_ms": 120000
     }
   ],
   "default": {

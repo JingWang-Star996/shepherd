@@ -48,7 +48,7 @@ TASK_ID=$(uuidgen | cut -c1-8 | tr '[:upper:]' '[:lower:]')
 注意：
 - 心跳文件位于 /tmp/shepherd/heartbeat-{TASK_ID}.json
 - 进度文件位于 /tmp/shepherd/progress-{TASK_ID}.json
-- 如果 60 秒内没有工具调用，主动更新心跳（表示"在思考"）
+- 如果 120 秒内没有工具调用，主动更新心跳（表示"在思考"）
 - 不要跳过心跳步骤，这是监控系统判断你是否存活的关键
 ```
 
@@ -141,7 +141,7 @@ shepherd/
 当子代理任务预计执行时间 > 2 分钟时，启用主动汇报机制。
 
 ### 汇报频率
-- **默认**：每 60 秒汇报一次
+- **默认**：每 120 秒汇报一次
 - **可配置**：通过 `report_interval_ms` 参数调整
 
 ### 汇报内容
@@ -160,7 +160,7 @@ shepherd/
 在心跳 JSON 中新增字段：
 ```json
 {
-  "reportIntervalMs": 60000,
+  "reportIntervalMs": 120000,
   "lastReportTime": 1781235000000,
   "currentStage": "数据收集",
   "progressPercent": 50

@@ -92,8 +92,8 @@ for hb_file in "$WATCHDOG_DIR"/heartbeat-*.json; do
     mkdir -p "$WATCHDOG_DIR/completed"
     mv "$hb_file" "$WATCHDOG_DIR/completed/"
     
-  elif [ $AGE -gt 60 ]; then
-    # 心跳停止 > 60s → 预警
+  elif [ $AGE -gt 120 ]; then
+    # 心跳停止 > 120s → 预警
     WARNING_COUNT=$((WARNING_COUNT + 1))
     echo "WARNING|$TASK_ID|$TASK_TYPE|${AGE}s|checking..."
   fi
