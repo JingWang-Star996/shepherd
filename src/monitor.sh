@@ -115,6 +115,18 @@ for hb_file in "$WATCHDOG_DIR"/heartbeat-*.json; do
          "$hb_file" > "$hb_file.tmp" && mv "$hb_file.tmp" "$hb_file"
     fi
   fi
+
+  # === 主动注入缺失检测 ===
+  # 如果子代理心跳超过 120 秒未汇报（lastBeat 过期），且任务状态为 running，
+  # 说明子代理可能没有被注入心跳协议，输出 REPORT_NEEDED 事件
+  STATUS=$(jq -r '.status // "unknown"' "$hb_file")
+  if [ "$STATUS" = "running" ] && [ "$AGE" -gt 120 ]; then
+    # 检查是否有 currentStep（有心跳协议注入的子代理会更新 currentStep）
+    HAS_PROTOCOL=$(jq -r 'if .currentStep != null and .currentStep != "" then "yes" else "no" end' "$hb_file")
+    if [ "$HAS_PROTOCOL" = "no" ]; then
+      echo "REPORT_NEEDED|$TASK_ID|$TASK_TYPE|no_heartbeat_protocol|${AGE}s"
+    fi
+  fi
 done
 
 # 更新仪表盘
